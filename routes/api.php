@@ -53,6 +53,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return response()->json(null, 204);
 // });
 
+Route::post('login', 'UserController@login');
+Route::post('register', 'UserController@register');
+
+Route::group(['middleware' => 'auth:api'], function() {
+    Route::get('details', 'UserController@details');
+});
+
 Route::get('products', 'ProductsController@index');
 
 Route::get('products/{productId}', 'ProductsController@show');
