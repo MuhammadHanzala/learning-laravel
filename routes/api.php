@@ -58,15 +58,19 @@ Route::post('register', 'UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('details', 'UserController@details');
+
+    Route::get('products', 'ProductsController@index');
+
+    Route::get('products/{productId}', 'ProductsController@show');
+
+    Route::get('products/user/{userId}', 'ProductsController@showByUserId');
+
+    Route::post('products', 'ProductsController@store');
+
+    Route::put('products/{product}', 'ProductsController@update');
+
+    Route::delete('products/{product}', 'ProductsController@delete');
 });
 
-Route::get('products', 'ProductsController@index');
 
-Route::get('products/{productId}', 'ProductsController@show');
-
-Route::post('products', 'ProductsController@store');
-
-Route::put('products/{product}', 'ProductsController@update');
-
-Route::delete('products/{product}', 'ProductsController@delete');
 

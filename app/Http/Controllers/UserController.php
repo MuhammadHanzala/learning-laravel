@@ -12,8 +12,13 @@ class UserController extends Controller
     public $successStatus = 200;
 
     public function register(Request $request) {
-        
-        $input = $request->all();
+    //    $input = '';
+    //    if($request->isJson()){
+           $input = $request->json()->all();
+    //    }else {
+    //        $input = $request->all();
+    //    }
+        // $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
             'email' => 'required',
