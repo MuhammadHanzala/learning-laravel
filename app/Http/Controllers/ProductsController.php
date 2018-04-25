@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-
 use App\Product;
 use App\User;
 
@@ -20,11 +19,9 @@ class ProductsController extends Controller
         return $productId;
     }
 
-    public function showByUserId($userId){
-         $products =  Product::where('user_id', '=', $userId)->get();
-        return response()->json(User::find($userId)->products);
-        // return $products;
-//        return $products;
+    public function showByUserId(User $userId){
+        //  $products =  Product::where('user_id', '=', $userId)->get();
+        return response()->json($userId->products, 200);
     }
 
     public function store(Request $request){
@@ -34,9 +31,16 @@ class ProductsController extends Controller
        }else {
            $input = $request->all();
        }
-        $product = Product::create($input);
-              
-        return response()->json($product, 201);
+       
+       try{
+           $userId = Auth::user()->id;
+           $input['user_id'] = $userId;
+           $product = Product::create($input);
+           
+           return response()->json($product, 201);
+        }catch(\Illuminate\Database\QueryException $ex){
+            return response()->json($ex, 400);
+        }
     }
 
     public function update (Request $request, Product $product) {
@@ -51,7 +55,11 @@ class ProductsController extends Controller
     }
 
     public function delete (Product $product) {
-        $product->delete();
-        return response()->json(null, 204);
+        if(Auth::user()->id === $product->user_id) {
+            $product->delete();
+            return response()->json(null, 204);
+        }else{
+            return response()->json(['error' => 'You donot have permission for completing this action'], 403);
+        }
     }
 }

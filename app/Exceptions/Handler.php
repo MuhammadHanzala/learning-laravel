@@ -48,6 +48,12 @@ class Handler extends ExceptionHandler
         if($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException){
             return new Response(\GuzzleHttp\json_encode(['error' => 'Resource Not Found'], 404));
         }
+        if($exception){
+            return response()->json([
+                'status' => $exception->getStatusCode(),
+                'error' => $exception->getMessage()
+            ],$exception->getStatusCode());
+        };
         return parent::render($request, $exception);
     }
 

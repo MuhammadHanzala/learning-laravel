@@ -12,29 +12,35 @@ class UserController extends Controller
     public $successStatus = 200;
 
     public function register(Request $request) {
-    //    $input = '';
-    //    if($request->isJson()){
+       $input = '';
+       if($request->isJson()){
            $input = $request->json()->all();
-    //    }else {
-    //        $input = $request->all();
-    //    }
+       }else {
+           $input = $request->all();
+       }
         // $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
-            'email' => 'required',
-            'password' => 'required'
+            'email' => 'required|email',
+            'password' => 'required|min:6'
         ]);
 
         if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json($validator->errors() , 400);
         }
 
         $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] = $user->createToken($user->name)->accessToken;
-        // $success['name'] = $user->name;
+        try{
+            $user = User::create($input);
+            $success['token'] = $user->createToken($user->name)->accessToken;
+            return response()->json($success, $this->successStatus);
 
-        return response()->json($success, $this->successStatus);
+        }catch(\Illuminate\Database\QueryException  $exception){
+            return response()->json($exception, 400);
+        }
+
+
+
     }
 
     public function login() {
